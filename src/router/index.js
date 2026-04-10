@@ -20,6 +20,13 @@ const routes = [
         path: '/todos',
         component: TodoList
 
+    },
+    {
+        name: 'TaskDetails',
+        path: '/todos/:id',
+        component: TaskDetails,
+        props: true
+
     }
 ]
 

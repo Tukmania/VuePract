@@ -12,8 +12,12 @@ defineProps({
         <p>{{ task.description }}</p>
         <p>Date: {{ task.date }}</p>
         <ul v-if="task.subTasks && task.subTasks.length > 0">
+          //add a checkbox to mark subtask as completed
           <li v-for="(subTask, subIndex) in task.subTasks" :key="subIndex">
-            {{ subTask }}
+            <label>
+              <input type="checkbox" v-model="subTask.completed" />
+              {{ subTask }}
+            </label>
           </li>
         </ul>
       </li>

@@ -1,47 +1,16 @@
 <script setup>
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
-import TaskForm from './components/TaskForm.vue'
-import { onMounted } from 'vue';
-import TaskList from './components/TaskList.vue';
-import { ref } from 'vue';
-
-
-//data properties
-const tasks = ref([]);
-
-//load tasks from local storage when the component is mounted
-onMounted(() => {
-   tasks.value = JSON.parse(localStorage.getItem("tasks")) || [];
-
- 
-});
-
-  const handleAddTask = (newTask) => {
-    //add new task to tasks array
-    tasks.value.push(newTask);
-
-     //save to local storage
-  localStorage.setItem("tasks", JSON.stringify(tasks.value));
-  };
-
- 
-
 </script>
 
 <template>
   <Header />
-
-  <main class="main-content">
-    
-      <h1>Add a task</h1>
-      <div class="content">
-        <TaskForm @taskAdded="handleAddTask" />
-        <TaskList :tasks="tasks" />
-      </div>
-   
-  </main>
-
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link>
+    <router-link to="/todos">Tasks</router-link>
+  </div>
+  <router-view />
   <Footer />
 </template>
 
@@ -73,4 +42,16 @@ onMounted(() => {
 .task p {
   margin: 0.5rem 0;
 }
+.nav {
+  background-color: #333;
+  padding: 1rem;
+}
+.nav a {
+  color: #fff;
+  margin-right: 1rem;
+  text-decoration: none;
+}
+.nav a:hover {
+  text-decoration: underline;
+} 
 </style>
