@@ -1,18 +1,24 @@
 <script setup>
+import { useRoute } from 'vue-router';
+
 defineProps({
     tasks: Array
 });
+
+
+
+
 </script>
 <template>
-  <div class="task-list">
+  <div class="task-list" >
     <h2>Task List</h2>
     <ul>
-      <li v-for="(task, index) in tasks" :key="index">
+      <li v-for="(task, index) in tasks" :key="index" @click="$emit('viewTask', task.id)" >
         <h3>{{ task.title }}</h3>
         <p>{{ task.description }}</p>
         <p>Date: {{ task.date }}</p>
         <ul v-if="task.subTasks && task.subTasks.length > 0">
-          //add a checkbox to mark subtask as completed
+        
           <li v-for="(subTask, subIndex) in task.subTasks" :key="subIndex">
             <label>
               <input type="checkbox" v-model="subTask.completed" />

@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import TodoList from '../views/TodoList.vue'
+import TaskDetails from '../views/TaskDetails.vue'
 
 
 const routes = [

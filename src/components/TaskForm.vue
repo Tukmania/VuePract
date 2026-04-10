@@ -22,6 +22,7 @@ const addSubtask = () => {
 
 const addTodo = () => {
   const newTask = {
+    id: Date.now().toString(),
     title: taskTitle.value,
     description: taskDescription.value,
     date: taskDate.value,
