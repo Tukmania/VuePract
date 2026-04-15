@@ -1,42 +1,105 @@
 <script setup>
 
-const tasks= [
+import { ref, reactive, computed } from 'vue';
+import TaskList from './components/TaskList.vue';
+import FilterTasks from './components/FilterTasks.vue';
+import ModalWindowComponent from './components/Modal/ModalWindowComponent.vue';
+import addTaskModal from './components/Modal/addTaskModal.vue';
+import AddTaskModal from './components/Modal/addTaskModal.vue';
+
+const tasks = reactive([
+  
     {
       name: "Website design",
       description: "Define the style guide, branding and create the webdesign on Figma.",
-      completed: true
+      completed: true,
+      id: 1
     },
     {
       name: "Website development",
       description: "Develop the portfolio website using Vue JS.",
-      completed: false
+      completed: true,
+      id: 2
+
     },
     {
       name: "Hosting and infrastructure",
       description: "Define hosting, domain and infrastructure for the portfolio website.",
-      completed: false
+      completed: false,
+      id: 3
     },
     {
       name: "Composition API",
       description: "Learn how to use the composition API and how it compares to the options API.",
-      completed: true
+      completed: false,
+      id: 4
+
     },
     {
       name: "Pinia",
-      description: "Learn how to setup a store using Pinia.",
-      completed: true
+      description: "Learn how to setup a store using Pinia.", 
+      completed: false,
+      id: 5
     },
     {
       name: "Groceries",
       description: "Buy rice, apples and potatos.",
-      completed: false
+      completed: false,
+      id: 6
     },
     {
       name: "Bank account",
       description: "Open a bank account for my freelance business.",
-      completed: false
+      completed: false,
+      id: 7
+
     }
-];
+ 
+]);
+
+let newTask = {completed: false};
+
+let filterByTask = ref("");
+
+let modalIsActive = ref(false);
+
+const FilteredTasks = computed(() => {
+  if (filterByTask.value === 'todo') {
+    return tasks.filter(task => !task.completed);
+  }
+  else if (filterByTask.value === 'done') {
+    return tasks.filter(task => task.completed);
+  }
+  else {
+    return tasks;
+  }
+});
+
+function addTask() {
+  if (newTask.name && newTask.description) {
+    newTask.id = Math.max(...tasks.map(task => task.id)) + 1;
+    tasks.push({...newTask});
+    newTask = {completed: false};
+  }
+  else {
+    alert("Please fill in both the title and description.");
+  }
+}
+
+function updateTask(id) {
+  const task = tasks.find(task => task.id === id);
+  if (task) {
+    task.completed = !task.completed;
+  }
+}
+
+
+function setFilter(value) {
+  filterByTask.value = value;
+}
+
+
+
 
 </script>
 
@@ -49,66 +112,27 @@ const tasks= [
           Tasks Manager
         </h1>
       </div>
+      <div class="header-side">
+       <button class="btn secondary" @click="modalIsActive = true">
+        Add Task
+       </button>
+      </div>
     </div>
     
-    <div class="filters">
-      <div>
-        <p>Filter by state</p>
-        <div class="badges">
-          <div class="badge">
-            To-Do
-          </div>
-          <div class="badge">
-            Done
-          </div>
-          <span class="clear">
-            x clear
-          </span>
-        </div>
-      </div>
-    </div>
+      <FilterTasks :FilterByTask="filterByTask" @setFilter="setFilter" @clearFilter="filterByTask = ''"/>
+      
+    
 
     <div class="tasks">
-      
-      <div class="task">
-        <h3>
-          Website design
-        </h3>
-        <p>
-          Define the style guide, branding and create the webdesign on Figma.
-        </p>
-        <div class="task-check">
-          <input type="checkbox" checked />
-          <label>
-            Done
-          </label>
-        </div>
-      </div>
 
-      <div class="task">
-        <h3>
-          Website development
-        </h3>
-        <p>
-          Develop the portfolio website using Vue JS.
-        </p>
-        <div class="task-check">
-          <input type="checkbox"/>
-          <label>
-            To-Do
-          </label>
-        </div>
-      </div>
-
+      <TaskList @toggleCompleted="updateTask" v-for="(task, index) in FilteredTasks" :key="index" :task="task"/>
     </div>
 
-    <div class="add-task">
-      <h3>Add a new task</h3>
-      <input type="text" name="title" placeholder="Enter a title..."><br />
-      <textarea name="description" rows="4" placeholder="Enter a description..." /><br />
-      <button class="btn gray">Add Task</button>
+     <ModalWindowComponent v-if="modalIsActive" @closePopup="modalIsActive = false">
+                
+        <AddTaskModal/>
 
-    </div>
+     </ModalWindowComponent>
 
   </main>
   
@@ -144,37 +168,7 @@ const tasks= [
 
 }
 
-.filters {
-  display: flex;
-  flex-direction: column;
-  margin: 40px 0;
 
-  p {
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 21px;
-    letter-spacing: 0em;
-    text-align: left;
-  }
-
-  .badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 14px 0;
-    align-items: center;
-  }
-
-  .clear {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 16px;
-    letter-spacing: 0em;
-    text-align: left;
-    cursor: pointer;
-  }
-
-}
 
 .tasks {
   display: grid;
@@ -183,6 +177,22 @@ const tasks= [
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.add-task {
+  margin-top: 60px;
+
+  input, textarea {
+    width: 360px;
+    max-width: 100%;
+    margin-top: 12px;
+    padding: 5px;
+  }
+
+  button {
+    width: 360px;
+    margin-top: 12px;
   }
 }
 
@@ -263,21 +273,6 @@ const tasks= [
   }
 }
 
-.add-task {
-  margin-top: 60px;
-
-  input, textarea {
-    width: 360px;
-    max-width: 100%;
-    margin-top: 12px;
-    padding: 5px;
-  }
-
-  button {
-    width: 360px;
-    margin-top: 12px;
-  }
-}
 
 
 </style>
