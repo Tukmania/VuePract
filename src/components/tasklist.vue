@@ -22,7 +22,10 @@ const store = useTaskStore();
          
           </label>
         </div>
+        <div class="btn">
+          <button class="btn gray" @click="store.deleteTask(task.id)">Delete</button>
       </div>
+</div>
 </template>
 
 <style lang="scss" scoped>

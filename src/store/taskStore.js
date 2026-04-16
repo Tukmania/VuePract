@@ -3,59 +3,12 @@ import { ref,reactive,computed } from "vue";
 
 
 export const useTaskStore = defineStore("tasks", () => {
-const tasks = reactive([
-  
-    {
-      name: "Website design",
-      description: "Define the style guide, branding and create the webdesign on Figma.",
-      completed: true,
-      id: 1
-    },
-    {
-      name: "Website development",
-      description: "Develop the portfolio website using Vue JS.",
-      completed: true,
-      id: 2
 
-    },
-    {
-      name: "Hosting and infrastructure",
-      description: "Define hosting, domain and infrastructure for the portfolio website.",
-      completed: false,
-      id: 3
-    },
-    {
-      name: "Composition API",
-      description: "Learn how to use the composition API and how it compares to the options API.",
-      completed: false,
-      id: 4
-
-    },
-    {
-      name: "Pinia",
-      description: "Learn how to setup a store using Pinia.", 
-      completed: false,
-      id: 5
-    },
-    {
-      name: "Groceries",
-      description: "Buy rice, apples and potatos.",
-      completed: false,
-      id: 6
-    },
-    {
-      name: "Bank account",
-      description: "Open a bank account for my freelance business.",
-      completed: false,
-      id: 7
-
-    }
- 
-]);
+const tasks = reactive(JSON.parse(localStorage.getItem('tasks')) || []);
 
 let filterByTask = ref("");
 
-
+let modalIsActive = ref(false);
 
 function setFilter(value) {
   filterByTask.value = value;
@@ -73,24 +26,43 @@ const FilteredTasks = computed(() => {
   }
 });
 
-function addTask() {
+function addTask(newTask) {
   if (newTask.name && newTask.description) {
-    newTask.id = Math.max(...tasks.map(task => task.id)) + 1;
+    newTask.id = tasks.length ? Math.max(...tasks.map(task => task.id)) + 1 : 1;
     tasks.push({...newTask});
-    newTask = {completed: false};
-  }
+        }
   else {
     alert("Please fill in both the title and description.");
   }
+  //After adding the task, we reset the newTask object to clear the form fields
+  newTask.name = "";
+  newTask.description = "";
+ closePopup();
 }
 
 function updateTask(id) {
   const task = tasks.find(task => task.id === id);
   if (task) {
+    //update the individual task status in the tasks array
     task.completed = !task.completed;
   }
 }
 
+function closePopup(){
+  modalIsActive.value = false;
+}
 
-  return { tasks, filterByTask, setFilter,FilteredTasks, addTask, updateTask };
+function openPopup(){
+  modalIsActive.value = true;
+}
+
+function deleteTask(id) {
+  const index = tasks.findIndex(task => task.id === id);
+  if (index !== -1) {
+    tasks.splice(index, 1);
+  }
+}
+
+
+  return { tasks, filterByTask, setFilter,FilteredTasks, addTask, updateTask, modalIsActive, closePopup, openPopup, deleteTask };
 });

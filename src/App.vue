@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, reactive, computed } from 'vue';
+
 import TaskList from './components/TaskList.vue';
 import FilterTasks from './components/FilterTasks.vue';
 import ModalWindowComponent from './components/Modal/ModalWindowComponent.vue';
@@ -10,20 +10,9 @@ import { useTaskStore } from './store/taskStore';
 
 const store = useTaskStore();
 
-let newTask = {completed: false};
-
-
-
-let modalIsActive = ref(false);
-
-
-
-
-
-
-
-
-
+store.$subscribe((mutation, state) => {
+  localStorage.setItem('tasks', JSON.stringify(state.tasks))
+})
 
 
 </script>
@@ -38,36 +27,35 @@ let modalIsActive = ref(false);
         </h1>
       </div>
       <div class="header-side">
-       <button class="btn secondary" @click="modalIsActive = true">
-        Add Task
-       </button>
+        <button class="btn secondary" @click="store.openPopup">
+          Add Task
+        </button>
       </div>
     </div>
-    
-      <FilterTasks/>
-      
-    
+
+    <FilterTasks />
+
+
 
     <div class="tasks">
 
-      <TaskList v-for="(task, index) in store.FilteredTasks" :key="index" :task="task"/>
+      <TaskList v-for="(task, index) in store.FilteredTasks" :key="index" :task="task" />
     </div>
 
-     <ModalWindowComponent v-if="modalIsActive" @closePopup="modalIsActive = false">
-                
-        <AddTaskModal/>
+    <ModalWindowComponent v-if="store.modalIsActive">
 
-     </ModalWindowComponent>
+      <AddTaskModal />
+
+    </ModalWindowComponent>
 
   </main>
-  
-   
+
+
 
 </template>
 
 
 <style lang="scss" scoped>
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -108,7 +96,8 @@ let modalIsActive = ref(false);
 .add-task {
   margin-top: 60px;
 
-  input, textarea {
+  input,
+  textarea {
     width: 360px;
     max-width: 100%;
     margin-top: 12px;
@@ -197,7 +186,4 @@ let modalIsActive = ref(false);
     }
   }
 }
-
-
-
 </style>
